@@ -1,69 +1,139 @@
-import Image from "next/image";
+import Link from "next/link";
+import Button from "@/components/Button";
+import HiringCta from "@/components/HiringCta";
+import JobList from "@/components/JobList";
+import { COMPANIES, SEED_JOBS } from "@/lib/jobs";
 
-export default function Home() {
+/**
+ * The home page is a Server Component. It reads the seed job data directly at
+ * render time, so no JavaScript is needed to show the featured roles.
+ */
+export default function HomePage() {
+  const openJobs = SEED_JOBS.filter((job) => job.status === "Open");
+
+  // Four most recently posted roles.
+  const featuredJobs = [...openJobs]
+    .sort((a, b) => b.postedDate.localeCompare(a.postedDate))
+    .slice(0, 4);
+
+  const totalOpenings = openJobs.reduce((total, job) => total + job.openings, 0);
+
+  const stats = [
+    { label: "Open roles", value: openJobs.length },
+    { label: "Positions to fill", value: totalOpenings },
+    { label: "Hiring companies", value: COMPANIES.length },
+    { label: "Cities", value: new Set(openJobs.map((job) => job.location)).size },
+  ];
+
+
+  const steps = [
+    {
+      title: "Create your profile",
+      body: "Add your experience, skills and a resume so recruiters know who they are talking to.",
+    },
+    {
+      title: "Find and apply",
+      body: "Search, filter and sort open roles, then apply with a short form and a cover note.",
+    },
+    {
+      title: "Track your progress",
+      body: "Follow each application from Applied through to Interview and Hired in one place.",
+    },
+  ];
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+    <>
+      {/* Hero */}
+      <section className="border-b border-slate-200 bg-white">
+        <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
+          <div className="mx-auto max-w-3xl text-center">
+            <span className="inline-flex items-center rounded-full bg-indigo-50 px-3 py-1 text-xs font-medium text-indigo-700 ring-1 ring-inset ring-indigo-200">
+              {openJobs.length} roles open right now
+            </span>
+            <h1 className="mt-5 text-4xl font-semibold tracking-tight text-slate-900 sm:text-5xl">
+              Hiring, without the spreadsheet
+            </h1>
+            <p className="mt-5 text-lg text-slate-600">
+              HireDesk brings job posting, applications and candidate tracking together. Candidates
+              apply in a couple of minutes; recruiters see everything in one dashboard.
+            </p>
+            <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
+              <Button href="/jobs" size="lg">
+                Browse jobs
+              </Button>
+              <HiringCta />
+            </div>
+          </div>
+
+          <dl className="mx-auto mt-16 grid max-w-3xl grid-cols-2 gap-6 sm:grid-cols-4">
+            {stats.map((stat) => (
+              <div key={stat.label} className="text-center">
+                <dt className="order-2 mt-1 text-sm text-slate-600">{stat.label}</dt>
+                <dd className="order-1 text-3xl font-semibold tracking-tight text-indigo-600">
+                  {stat.value}
+                </dd>
+              </div>
+            ))}
+          </dl>
+        </div>
+      </section>
+
+      {/* Featured jobs */}
+      <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
+        <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
+          <div>
+            <h2 className="text-2xl font-semibold tracking-tight text-slate-900">Latest openings</h2>
+            <p className="mt-1 text-sm text-slate-600">Fresh roles added in the last two weeks.</p>
+          </div>
+          <Link
+            href="/jobs"
+            className="text-sm font-medium text-indigo-600 hover:text-indigo-700"
+          >
+            See all jobs &rarr;
+          </Link>
+        </div>
+
+        <JobList jobs={featuredJobs} />
+      </section>
+
+
+      {/* How it works */}
+      <section className="border-y border-slate-200 bg-white">
+        <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
+          <h2 className="text-2xl font-semibold tracking-tight text-slate-900">How it works</h2>
+          <div className="mt-8 grid gap-6 md:grid-cols-3">
+            {steps.map((step, index) => (
+              <div key={step.title} className="rounded-xl border border-slate-200 p-6">
+                <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-indigo-600 text-sm font-semibold text-white">
+                  {index + 1}
+                </span>
+                <h3 className="mt-4 text-base font-semibold text-slate-900">{step.title}</h3>
+                <p className="mt-2 text-sm text-slate-600">{step.body}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Call to action */}
+      <section className="mx-auto max-w-7xl px-4 pb-20 sm:px-6 lg:px-8">
+        <div className="rounded-2xl bg-slate-900 px-8 py-14 text-center">
+          <h2 className="text-3xl font-semibold tracking-tight text-white">
+            Ready to make your next move?
+          </h2>
+          <p className="mx-auto mt-3 max-w-xl text-slate-300">
+            Create a profile, save the roles you like and keep every application in one place.
           </p>
+          <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
+            <Button href="/signup" size="lg">
+              Create an account
+            </Button>
+            <Button href="/jobs" variant="outline" size="lg">
+              Explore roles
+            </Button>
+          </div>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+      </section>
+    </>
   );
 }
