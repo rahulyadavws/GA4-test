@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono } from "next/font/google"; 
+import Script from "next/script";            
 import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
 import "./globals.css";
+
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -23,10 +25,7 @@ export const metadata: Metadata = {
     "A demo hiring management system built with Next.js, TypeScript and Tailwind CSS.",
 };
 
-/**
- * The root layout wraps every page with the navigation bar and footer.
- * It stays a Server Component - only the Navbar itself needs the browser.
- */
+
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
@@ -34,6 +33,21 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col bg-slate-50 font-sans text-slate-900">
+      <Script
+  src="https://www.googletagmanager.com/gtag/js?id=G-6YRHCNWHRF"
+  strategy="afterInteractive"
+/>
+
+<Script id="google-analytics" strategy="afterInteractive">
+  {`
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){window.dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-6YRHCNWHRF');
+  `}
+</Script>
+
+        
         <Navbar />
         <main className="flex-1">{children}</main>
         <Footer />
