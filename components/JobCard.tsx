@@ -1,6 +1,5 @@
 import Link from "next/link";
 import Badge from "./Badge";
-import SaveJobButton from "./SaveJobButton";
 import { formatDate, formatSalary } from "@/lib/format";
 import type { Job } from "@/lib/types";
 
@@ -19,7 +18,7 @@ function colourFor(text: string) {
   return INITIAL_COLOURS[sum % INITIAL_COLOURS.length];
 }
 
-export default function JobCard({ job, showSave = true }: { job: Job; showSave?: boolean }) {
+export default function JobCard({ job }: { job: Job }) {
   return (
     <article className="flex flex-col gap-4 rounded-xl border border-slate-200 bg-white p-5 transition hover:border-indigo-300 hover:shadow-sm">
       <div className="flex items-start gap-4">
@@ -39,8 +38,6 @@ export default function JobCard({ job, showSave = true }: { job: Job; showSave?:
             {job.company} &middot; {job.location}
           </p>
         </div>
-
-        {showSave && <SaveJobButton jobId={job.id} />}
       </div>
 
       <div className="flex flex-wrap gap-2">

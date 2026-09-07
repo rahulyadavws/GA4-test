@@ -85,56 +85,6 @@ function jobToValues(job: Job): JobFormValues {
   };
 }
 
-function validate(values: JobFormValues) {
-  const errors: Partial<Record<keyof JobFormValues, string>> = {};
-
-  if (!values.title.trim()) {
-    errors.title = "Please enter a job title.";
-  } else if (values.title.trim().length < 4) {
-    errors.title = "That title looks too short.";
-  }
-
-  if (!values.company.trim()) errors.company = "Please enter the company name.";
-  if (!values.location.trim()) errors.location = "Please enter a location.";
-  if (!values.experience.trim()) errors.experience = "For example: 3 - 5 years.";
-
-  const min = Number(values.salaryMin);
-  const max = Number(values.salaryMax);
-
-  if (!values.salaryMin.trim()) {
-    errors.salaryMin = "Enter a minimum salary.";
-  } else if (Number.isNaN(min) || min <= 0) {
-    errors.salaryMin = "Enter a number greater than 0.";
-  }
-
-  if (!values.salaryMax.trim()) {
-    errors.salaryMax = "Enter a maximum salary.";
-  } else if (Number.isNaN(max) || max <= 0) {
-    errors.salaryMax = "Enter a number greater than 0.";
-  } else if (!Number.isNaN(min) && max < min) {
-    errors.salaryMax = "Maximum must be at least the minimum.";
-  }
-
-  const openings = Number(values.openings);
-  if (Number.isNaN(openings) || openings < 1) errors.openings = "There must be at least 1 opening.";
-
-  if (splitByComma(values.skills).length === 0) {
-    errors.skills = "Add at least one skill.";
-  }
-
-  if (!values.description.trim()) {
-    errors.description = "Please describe the role.";
-  } else if (values.description.trim().length < 60) {
-    errors.description = "Please write at least 60 characters.";
-  }
-
-  if (splitByLine(values.requirements).length === 0) {
-    errors.requirements = "Add at least one requirement, one per line.";
-  }
-
-  return errors;
-}
-
 export default function JobForm({
   job,
   onSave,
@@ -148,27 +98,21 @@ export default function JobForm({
   cancelHref: string;
 }) {
   const [values, setValues] = useState<JobFormValues>(job ? jobToValues(job) : BLANK);
-  const [errors, setErrors] = useState<Partial<Record<keyof JobFormValues, string>>>({});
 
   function handleChange(
     event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>,
   ) {
     const { name, value } = event.target;
     setValues((current) => ({ ...current, [name]: value }));
-    setErrors((current) => ({ ...current, [name]: undefined }));
   }
 
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    const nextErrors = validate(values);
-    setErrors(nextErrors);
-    if (Object.keys(nextErrors).length > 0) return;
-
-    const company = values.company.trim();
+    const company = values.company.trim() || "Unnamed company";
 
     onSave({
-      title: values.title.trim(),
+      title: values.title.trim() || "Untitled role",
       company,
       // Fall back to the first two letters of the company name.
       companyInitials: (values.companyInitials.trim() || company.slice(0, 2)).toUpperCase(),
@@ -177,20 +121,21 @@ export default function JobForm({
       workMode: values.workMode as WorkMode,
       experience: values.experience.trim(),
       experienceLevel: values.experienceLevel as ExperienceLevel,
-      salaryMin: Number(values.salaryMin),
-      salaryMax: Number(values.salaryMax),
+      // No validation, so fall back to 0 rather than letting NaN through.
+      salaryMin: Number(values.salaryMin) || 0,
+      salaryMax: Number(values.salaryMax) || 0,
       skills: splitByComma(values.skills),
       description: values.description.trim(),
       requirements: splitByLine(values.requirements),
       benefits: splitByLine(values.benefits),
       department: values.department,
-      openings: Number(values.openings),
+      openings: Number(values.openings) || 1,
       status: values.status as JobStatus,
     });
   }
 
   return (
-    <form onSubmit={handleSubmit} noValidate className="space-y-6">
+    <form onSubmit={handleSubmit} className="space-y-6">
       <fieldset className="rounded-xl border border-slate-200 bg-white p-6">
         <legend className="px-2 text-sm font-semibold text-slate-900">The basics</legend>
         <div className="grid gap-5 sm:grid-cols-2">
@@ -199,27 +144,21 @@ export default function JobForm({
             name="title"
             value={values.title}
             onChange={handleChange}
-            error={errors.title}
             placeholder="Senior Frontend Engineer"
-            required
           />
           <FormInput
             label="Company"
             name="company"
             value={values.company}
             onChange={handleChange}
-            error={errors.company}
             placeholder="Nimbus Labs"
-            required
           />
           <FormInput
             label="Location"
             name="location"
             value={values.location}
             onChange={handleChange}
-            error={errors.location}
             placeholder="Bengaluru, India"
-            required
           />
           <FormInput
             label="Company initials"
@@ -269,9 +208,7 @@ export default function JobForm({
             name="experience"
             value={values.experience}
             onChange={handleChange}
-            error={errors.experience}
             placeholder="3 - 5 years"
-            required
           />
           <FormSelect
             label="Experience level"
@@ -286,9 +223,7 @@ export default function JobForm({
             type="number"
             value={values.salaryMin}
             onChange={handleChange}
-            error={errors.salaryMin}
             placeholder="18"
-            required
           />
           <FormInput
             label="Maximum salary (LPA)"
@@ -296,9 +231,7 @@ export default function JobForm({
             type="number"
             value={values.salaryMax}
             onChange={handleChange}
-            error={errors.salaryMax}
             placeholder="28"
-            required
           />
           <FormInput
             label="Number of openings"
@@ -306,18 +239,14 @@ export default function JobForm({
             type="number"
             value={values.openings}
             onChange={handleChange}
-            error={errors.openings}
-            required
           />
           <FormInput
             label="Skills"
             name="skills"
             value={values.skills}
             onChange={handleChange}
-            error={errors.skills}
             placeholder="React, TypeScript, Next.js"
             hint="Separate each skill with a comma."
-            required
           />
         </div>
       </fieldset>
@@ -330,22 +259,17 @@ export default function JobForm({
             name="description"
             value={values.description}
             onChange={handleChange}
-            error={errors.description}
             rows={5}
             placeholder="What the role is, who the team is, and why it matters."
-            hint={`${values.description.trim().length} / 60 characters minimum`}
-            required
           />
           <FormTextarea
             label="Requirements"
             name="requirements"
             value={values.requirements}
             onChange={handleChange}
-            error={errors.requirements}
             rows={5}
             placeholder={"4+ years with React\nStrong TypeScript"}
             hint="One per line."
-            required
           />
           <FormTextarea
             label="Benefits"

@@ -1,6 +1,12 @@
 import type { Application } from "./types";
 
 /**
+ * Everything a visitor submits is filed under this id. There are no candidate
+ * accounts on this site, so one id is all we need.
+ */
+export const DEMO_CANDIDATE_ID = "cand-001";
+
+/**
  * The applications the demo starts with.
  * The first five belong to the demo candidate (cand-001) so the candidate
  * dashboard has something to show. The rest come from other candidates so the

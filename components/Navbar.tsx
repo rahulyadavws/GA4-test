@@ -5,7 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 import { useSession } from "@/lib/hooks";
 
-/** Links everybody can see. */
+/** What a visitor looking for a job sees. */
 const PUBLIC_LINKS = [
   { href: "/", label: "Home" },
   { href: "/jobs", label: "Jobs" },
@@ -13,10 +13,14 @@ const PUBLIC_LINKS = [
   { href: "/contact", label: "Contact" },
 ];
 
-/** Extra links added once you are "signed in" as a candidate. */
-const CANDIDATE_LINKS = [
-  { href: "/candidate/dashboard", label: "Dashboard" },
-  { href: "/candidate/applications", label: "My Applications" },
+/**
+ * What a signed-in recruiter sees instead. About and Contact are there for job
+ * seekers, not for the hiring team - but Jobs stays so a recruiter can check
+ * that a role they posted really is live on the public board.
+ */
+const RECRUITER_PUBLIC_LINKS = [
+  { href: "/", label: "Home" },
+  { href: "/jobs", label: "Public job board" },
 ];
 
 /** Extra links added once you are "signed in" as a recruiter. */
@@ -39,14 +43,11 @@ export default function Navbar() {
     router.push("/");
   }
 
-  const roleLinks =
-    session?.role === "recruiter"
-      ? RECRUITER_LINKS
-      : session?.role === "candidate"
-        ? CANDIDATE_LINKS
-        : [];
+  const isRecruiter = session?.role === "recruiter";
 
-  const links = [...PUBLIC_LINKS, ...roleLinks];
+  const links = isRecruiter
+    ? [...RECRUITER_PUBLIC_LINKS, ...RECRUITER_LINKS]
+    : PUBLIC_LINKS;
 
   function isActive(href: string) {
     return href === "/" ? pathname === "/" : pathname.startsWith(href);
@@ -99,15 +100,9 @@ export default function Navbar() {
             <>
               <Link
                 href="/login"
-                className="rounded-lg px-3 py-2 text-sm font-medium text-slate-600 transition hover:text-slate-900"
+                className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
               >
-                Log in
-              </Link>
-              <Link
-                href="/signup"
-                className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-indigo-700"
-              >
-                Sign up
+                Recruiter login
               </Link>
             </>
           )}
@@ -173,14 +168,7 @@ export default function Navbar() {
                   onClick={() => setMenuOpen(false)}
                   className="flex-1 rounded-lg border border-slate-300 px-3 py-2 text-center text-sm font-medium text-slate-700"
                 >
-                  Log in
-                </Link>
-                <Link
-                  href="/signup"
-                  onClick={() => setMenuOpen(false)}
-                  className="flex-1 rounded-lg bg-indigo-600 px-3 py-2 text-center text-sm font-medium text-white"
-                >
-                  Sign up
+                  Recruiter login
                 </Link>
               </>
             )}

@@ -35,7 +35,6 @@ const CONTACT_DETAILS = [
 
 export default function ContactPage() {
   const [values, setValues] = useState<FormValues>(BLANK);
-  const [errors, setErrors] = useState<Partial<Record<keyof FormValues, string>>>({});
   const [sent, setSent] = useState(false);
 
   function handleChange(
@@ -43,27 +42,10 @@ export default function ContactPage() {
   ) {
     const { name, value } = event.target;
     setValues((current) => ({ ...current, [name]: value }));
-    setErrors((current) => ({ ...current, [name]: undefined }));
   }
 
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-
-    const nextErrors: Partial<Record<keyof FormValues, string>> = {};
-    if (!values.name.trim()) nextErrors.name = "Please tell us your name.";
-    if (!values.email.trim()) {
-      nextErrors.email = "Please enter your email address.";
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(values.email.trim())) {
-      nextErrors.email = "Enter a valid email address.";
-    }
-    if (!values.message.trim()) {
-      nextErrors.message = "Please write a message.";
-    } else if (values.message.trim().length < 20) {
-      nextErrors.message = "Please write at least 20 characters.";
-    }
-
-    setErrors(nextErrors);
-    if (Object.keys(nextErrors).length > 0) return;
 
     // Nothing is sent anywhere - we just show the confirmation.
     setSent(true);
@@ -91,16 +73,14 @@ export default function ContactPage() {
             </div>
           )}
 
-          <form onSubmit={handleSubmit} noValidate className="space-y-5">
+          <form onSubmit={handleSubmit} className="space-y-5">
             <div className="grid gap-5 sm:grid-cols-2">
               <FormInput
                 label="Your name"
                 name="name"
                 value={values.name}
                 onChange={handleChange}
-                error={errors.name}
                 placeholder="Aarav Sharma"
-                required
               />
               <FormInput
                 label="Email"
@@ -108,9 +88,7 @@ export default function ContactPage() {
                 type="email"
                 value={values.email}
                 onChange={handleChange}
-                error={errors.email}
                 placeholder="you@example.com"
-                required
               />
             </div>
 
@@ -127,11 +105,8 @@ export default function ContactPage() {
               name="message"
               value={values.message}
               onChange={handleChange}
-              error={errors.message}
               rows={6}
               placeholder="How can we help?"
-              hint={`${values.message.trim().length} / 20 characters minimum`}
-              required
             />
 
             <Button type="submit" size="lg">

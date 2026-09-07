@@ -92,48 +92,10 @@ export interface Application {
   timeline: TimelineEvent[];
 }
 
-/** A candidate in the recruiter's talent pool. */
-export interface Candidate {
-  id: string;
-  name: string;
-  email: string;
-  phone: string;
-  headline: string;
-  location: string;
-  experience: string;
-  skills: string[];
-  currentCompany: string;
-}
-
-/** The editable profile of the logged-in demo candidate. */
-export interface CandidateProfile {
-  fullName: string;
-  email: string;
-  phone: string;
-  location: string;
-  headline: string;
-  experience: string;
-  currentCompany: string;
-  expectedSalary: string;
-  noticePeriod: string;
-  skills: string;
-  about: string;
-  portfolioUrl: string;
-  linkedinUrl: string;
-  resumeFileName: string;
-}
-
 export type Role = "candidate" | "recruiter";
 
-/**
- * A pretend logged-in user. Stored in localStorage, no real auth.
- *
- * `id` is what ties a person to their applications, saved jobs and profile -
- * it is derived from the email when you log in, so signing back in with the
- * same address brings your data back.
- */
+/** A pretend logged-in recruiter. Stored in localStorage, no real auth. */
 export interface Session {
-  id: string;
   name: string;
   email: string;
   role: Role;

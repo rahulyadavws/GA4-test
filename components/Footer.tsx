@@ -2,30 +2,19 @@ import Link from "next/link";
 
 const COLUMNS = [
   {
-    title: "For candidates",
+    title: "Find work",
     links: [
       { href: "/jobs", label: "Browse jobs" },
-      { href: "/candidate/dashboard", label: "Candidate dashboard" },
-      { href: "/candidate/applications", label: "My applications" },
-      { href: "/candidate/saved-jobs", label: "Saved jobs" },
+      { href: "/about", label: "About us" },
+      { href: "/contact", label: "Contact" },
     ],
   },
   {
     title: "For recruiters",
     links: [
-      { href: "/recruiter/dashboard", label: "Recruiter dashboard" },
-      { href: "/recruiter/jobs", label: "Manage jobs" },
+      { href: "/login", label: "Recruiter login" },
+      { href: "/recruiter/dashboard", label: "Dashboard" },
       { href: "/recruiter/jobs/new", label: "Post a job" },
-      { href: "/recruiter/candidates", label: "Candidates" },
-    ],
-  },
-  {
-    title: "Company",
-    links: [
-      { href: "/about", label: "About us" },
-      { href: "/contact", label: "Contact" },
-      { href: "/login", label: "Log in" },
-      { href: "/signup", label: "Sign up" },
     ],
   },
 ];
@@ -34,7 +23,7 @@ export default function Footer() {
   return (
     <footer className="mt-auto border-t border-slate-200 bg-white">
       <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
-        <div className="grid gap-10 md:grid-cols-4">
+        <div className="grid gap-10 md:grid-cols-3">
           <div>
             <div className="flex items-center gap-2">
               <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-indigo-600 text-sm font-bold text-white">

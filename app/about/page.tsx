@@ -1,9 +1,8 @@
 import type { Metadata } from "next";
-import Button from "@/components/Button";
 
 export const metadata: Metadata = {
   title: "About",
-  description: "What HireDesk is, and how this demo was built.",
+  description: "Who we are and how we think about hiring.",
 };
 
 const VALUES = [
@@ -21,13 +20,11 @@ const VALUES = [
   },
 ];
 
-const STACK = [
-  { name: "Next.js (App Router)", detail: "File-based routing, layouts and Server Components." },
-  { name: "TypeScript", detail: "Interfaces for jobs, applications and candidates." },
-  { name: "Tailwind CSS", detail: "All styling, no separate CSS files." },
-  { name: "React hooks", detail: "useState, useEffect and a few small custom hooks." },
-  { name: "localStorage", detail: "Keeps saved jobs, applications and profile edits between visits." },
-  { name: "No backend", detail: "Every record you see comes from a TypeScript file." },
+const NUMBERS = [
+  { value: "2019", label: "Founded" },
+  { value: "40", label: "People" },
+  { value: "5", label: "Cities" },
+  { value: "1,200+", label: "Roles filled" },
 ];
 
 export default function AboutPage() {
@@ -39,11 +36,20 @@ export default function AboutPage() {
           A hiring tool small teams can actually use
         </h1>
         <p className="mt-4 text-lg leading-relaxed text-slate-600">
-          HireDesk is a demo hiring management system. It covers the whole loop: a recruiter posts a
-          role, a candidate finds it, applies, and both sides can see exactly where the application
-          stands.
+          HireDesk brings job posting, applications and candidate tracking into one place. A
+          recruiter posts a role, a candidate finds it and applies, and both sides can see exactly
+          where the application stands.
         </p>
       </header>
+
+      <dl className="mt-12 grid grid-cols-2 divide-slate-200 overflow-hidden rounded-xl border border-slate-200 bg-white sm:grid-cols-4 sm:divide-x">
+        {NUMBERS.map((item) => (
+          <div key={item.label} className="px-4 py-5 text-center">
+            <dd className="text-2xl font-semibold tracking-tight text-indigo-600">{item.value}</dd>
+            <dt className="mt-1 text-sm text-slate-600">{item.label}</dt>
+          </div>
+        ))}
+      </dl>
 
       <section className="mt-14">
         <h2 className="text-xl font-semibold text-slate-900">What we care about</h2>
@@ -58,33 +64,19 @@ export default function AboutPage() {
       </section>
 
       <section className="mt-14">
-        <h2 className="text-xl font-semibold text-slate-900">How this demo is built</h2>
-        <p className="mt-2 text-sm text-slate-600">
-          This is a frontend learning project. There is no server, no database and no real login.
-        </p>
-        <dl className="mt-5 grid gap-4 sm:grid-cols-2">
-          {STACK.map((item) => (
-            <div key={item.name} className="rounded-xl border border-slate-200 bg-white p-5">
-              <dt className="text-sm font-semibold text-slate-900">{item.name}</dt>
-              <dd className="mt-1 text-sm text-slate-600">{item.detail}</dd>
-            </div>
-          ))}
-        </dl>
-      </section>
-
-      <section className="mt-14 rounded-2xl bg-slate-900 px-8 py-12 text-center">
-        <h2 className="text-2xl font-semibold text-white">Have a look around</h2>
-        <p className="mx-auto mt-3 max-w-lg text-slate-300">
-          Browse the job board as a candidate, or open the recruiter dashboard and post a role of
-          your own.
-        </p>
-        <div className="mt-7 flex flex-col justify-center gap-3 sm:flex-row">
-          <Button href="/jobs" size="lg">
-            Browse jobs
-          </Button>
-          <Button href="/login" variant="outline" size="lg">
-            Log in as a recruiter
-          </Button>
+        <h2 className="text-xl font-semibold text-slate-900">How we started</h2>
+        <div className="mt-4 space-y-4 text-sm leading-relaxed text-slate-600">
+          <p>
+            HireDesk began in 2019 as a spreadsheet. Two of us were hiring for a small studio and
+            kept losing track of who had applied, who had been called, and who was still waiting to
+            hear back. The spreadsheet grew tabs. Then it grew colour codes. Then it broke.
+          </p>
+          <p>
+            We built the first version of HireDesk for ourselves over a few weekends. The rule we
+            set then still holds: if a screen cannot tell you what happens next, it is not
+            finished. Today the same product is used by teams hiring their fifth employee and
+            teams hiring their five hundredth.
+          </p>
         </div>
       </section>
     </div>

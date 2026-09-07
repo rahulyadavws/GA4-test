@@ -8,9 +8,15 @@ export const metadata: Metadata = {
 
 /**
  * A Server Component shell. All the interactive work - search, filters and
- * sorting - happens inside <JobBrowser />, which is a Client Component.
+ * sorting - happens inside <JobBrowser />, a Client Component.
+ *
+ * `searchParams` is a Promise in Next.js, so it has to be awaited. It carries
+ * the `?q=` term from the home page search box.
  */
-export default function JobsPage() {
+export default async function JobsPage({ searchParams }: PageProps<"/jobs">) {
+  const { q } = await searchParams;
+  const initialSearch = typeof q === "string" ? q : "";
+
   return (
     <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
       <div className="mb-8">
@@ -20,7 +26,7 @@ export default function JobsPage() {
         </p>
       </div>
 
-      <JobBrowser />
+      <JobBrowser initialSearch={initialSearch} />
     </div>
   );
 }

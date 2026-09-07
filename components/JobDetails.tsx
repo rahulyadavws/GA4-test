@@ -4,9 +4,8 @@ import Link from "next/link";
 import Badge from "./Badge";
 import Button from "./Button";
 import JobCard from "./JobCard";
-import SaveJobButton from "./SaveJobButton";
 import { formatDate, formatSalary, timeAgo } from "@/lib/format";
-import { useApplications, useJobs, useSession } from "@/lib/hooks";
+import { useApplications, useJobs } from "@/lib/hooks";
 
 /** A labelled row in the "Job overview" sidebar box. */
 function OverviewRow({ label, value }: { label: string; value: string }) {
@@ -42,7 +41,6 @@ function BulletSection({ title, items }: { title: string; items: string[] }) {
 export default function JobDetails({ jobId }: { jobId: string }) {
   const { getJob, openJobs, loaded } = useJobs();
   const { hasApplied } = useApplications();
-  const { session } = useSession();
 
   const job = getJob(jobId);
 
@@ -164,32 +162,9 @@ export default function JobDetails({ jobId }: { jobId: string }) {
                 <div className="rounded-lg bg-slate-100 px-4 py-3 text-center text-sm font-medium text-slate-600">
                   Applications are closed
                 </div>
-              ) : session?.role === "recruiter" ? (
-                <div className="rounded-lg bg-slate-100 px-4 py-3 text-center text-sm text-slate-600">
-                  You are signed in as a recruiter, so you cannot apply.
-                </div>
-              ) : session ? (
+              ) : (
                 <Button href={`/jobs/${job.id}/apply`} fullWidth size="lg">
                   Apply now
-                </Button>
-              ) : (
-                <>
-                  <Button href="/login" fullWidth size="lg">
-                    Log in to apply
-                  </Button>
-                  <p className="text-center text-xs text-slate-500">
-                    We ask you to log in so your application can be tracked.
-                  </p>
-                </>
-              )}
-
-              <div className="[&>button]:w-full [&>button]:justify-center">
-                <SaveJobButton jobId={job.id} withLabel />
-              </div>
-
-              {applied && (
-                <Button href="/candidate/applications" variant="outline" fullWidth>
-                  View my applications
                 </Button>
               )}
             </div>

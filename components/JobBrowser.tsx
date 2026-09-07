@@ -70,9 +70,10 @@ function sortJobs(jobs: Job[], sort: SortOption) {
  * The whole job board: search box, filter sidebar, sort dropdown and results.
  * This is a Client Component because it holds interactive state.
  */
-export default function JobBrowser() {
+export default function JobBrowser({ initialSearch = "" }: { initialSearch?: string }) {
   const { openJobs } = useJobs();
-  const [search, setSearch] = useState("");
+  // Seeded from the ?q= term the home page search box sends over.
+  const [search, setSearch] = useState(initialSearch);
   const [filters, setFilters] = useState<JobFilters>(EMPTY_FILTERS);
   const [sort, setSort] = useState<SortOption>("newest");
   const [showFilters, setShowFilters] = useState(false);

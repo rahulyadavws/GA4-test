@@ -6,8 +6,6 @@ import { useCallback, useSyncExternalStore } from "react";
 export const STORAGE_KEYS = {
   jobs: "hrms.jobs",
   applications: "hrms.applications",
-  savedJobs: "hrms.savedJobs",
-  profile: "hrms.profile",
   session: "hrms.session",
 } as const;
 
@@ -65,12 +63,9 @@ function getStore<T>(key: string, initial: T): Store<T> {
 }
 
 /**
- * Every key holding sample data.
- *
- * Saved jobs and profiles are stored per user ("hrms.profile.cand-001"), so we
- * match on the prefix rather than an exact name. The session and the version
- * marker are deliberately left alone - resetting the data should not sign you
- * out of the dashboard you are looking at.
+ * The keys holding sample data. The session and the version marker are left
+ * alone - resetting the data should not sign you out of the dashboard you are
+ * looking at.
  */
 function demoDataKeys(): string[] {
   const keep = new Set<string>([STORAGE_KEYS.session, VERSION_KEY]);
@@ -96,7 +91,7 @@ export function clearDemoData(): void {
  * Without it, anyone who opened the site before the change would keep seeing
  * their old saved copy forever, because localStorage always wins over the seed.
  */
-const DATA_VERSION = "3";
+const DATA_VERSION = "7";
 const VERSION_KEY = "hrms.version";
 
 let versionChecked = false;

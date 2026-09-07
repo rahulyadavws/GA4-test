@@ -1,26 +1,11 @@
 "use client";
 
 import { useCallback, useMemo } from "react";
-import { SEED_APPLICATIONS } from "./applications";
-import {
-  BLANK_PROFILE,
-  DEFAULT_PROFILE,
-  DEMO_CANDIDATE_ID,
-  userIdForEmail,
-} from "./candidates";
+import { DEMO_CANDIDATE_ID, SEED_APPLICATIONS } from "./applications";
 import { createId, today } from "./format";
 import { SEED_JOBS } from "./jobs";
 import { STORAGE_KEYS, useLocalStorageState } from "./storage";
-import type {
-  Application,
-  ApplicationStatus,
-  CandidateProfile,
-  Job,
-  Session,
-} from "./types";
-
-/** Defined once so its identity never changes between renders. */
-const NO_SAVED_JOBS: string[] = [];
+import type { Application, ApplicationStatus, Job, Session } from "./types";
 
 /**
  * The job list, seeded from lib/jobs.ts and then kept in localStorage so
@@ -65,25 +50,18 @@ export function useJobs() {
 
 /** Every application in the demo, plus the actions that change them. */
 export function useApplications() {
-  const { session } = useSession();
   const [applications, setApplications, loaded] = useLocalStorageState<Application[]>(
     STORAGE_KEYS.applications,
     SEED_APPLICATIONS,
   );
 
-  /**
-   * The signed-in candidate's own applications, newest first.
-   * Empty when nobody is signed in - that is the whole point of asking people
-   * to log in before they apply.
-   */
+  /** The demo candidate's own applications, newest first. */
   const myApplications = useMemo(
     () =>
-      session
-        ? applications
-            .filter((application) => application.candidateId === session.id)
-            .sort((a, b) => b.appliedDate.localeCompare(a.appliedDate))
-        : [],
-    [applications, session],
+      applications
+        .filter((application) => application.candidateId === DEMO_CANDIDATE_ID)
+        .sort((a, b) => b.appliedDate.localeCompare(a.appliedDate)),
+    [applications],
   );
 
   const getApplication = useCallback(
@@ -91,15 +69,14 @@ export function useApplications() {
     [applications],
   );
 
-  /** True when the signed-in candidate has already applied to this job. */
+  /** True when the demo candidate has already applied to this job. */
   const hasApplied = useCallback(
-    (jobId: string) => {
-      if (!session) return false;
-      return applications.some(
-        (application) => application.jobId === jobId && application.candidateId === session.id,
-      );
-    },
-    [applications, session],
+    (jobId: string) =>
+      applications.some(
+        (application) =>
+          application.jobId === jobId && application.candidateId === DEMO_CANDIDATE_ID,
+      ),
+    [applications],
   );
 
   const addApplication = useCallback(
@@ -166,59 +143,12 @@ export function useApplications() {
 }
 
 /**
- * The signed-in candidate's saved ("bookmarked") jobs, as a list of job ids.
- * The storage key includes the user id, so two people on the same browser do
- * not share a bookmark list.
- */
-export function useSavedJobs() {
-  const { session } = useSession();
-  const [savedJobIds, setSavedJobIds, loaded] = useLocalStorageState<string[]>(
-    session ? `${STORAGE_KEYS.savedJobs}.${session.id}` : STORAGE_KEYS.savedJobs,
-    NO_SAVED_JOBS,
-  );
-
-  const isSaved = useCallback(
-    (jobId: string) => savedJobIds.includes(jobId),
-    [savedJobIds],
-  );
-
-  const toggleSaved = useCallback(
-    (jobId: string) =>
-      setSavedJobIds((current) =>
-        current.includes(jobId)
-          ? current.filter((id) => id !== jobId)
-          : [jobId, ...current],
-      ),
-    [setSavedJobIds],
-  );
-
-  return { savedJobIds, loaded, isSaved, toggleSaved };
-}
-
-/**
- * The editable candidate profile, stored per user.
+ * A pretend sign-in, used by the recruiter side only.
  *
- * Logging in as the sample candidate shows the filled-in demo profile; any
- * other account starts blank apart from the name and email you signed up with.
- */
-export function useProfile() {
-  const { session } = useSession();
-
-  const key = session ? `${STORAGE_KEYS.profile}.${session.id}` : STORAGE_KEYS.profile;
-
-  const initialProfile = useMemo<CandidateProfile>(() => {
-    if (!session || session.id === DEMO_CANDIDATE_ID) return DEFAULT_PROFILE;
-    return { ...BLANK_PROFILE, fullName: session.name, email: session.email };
-  }, [session]);
-
-  const [profile, setProfile, loaded] = useLocalStorageState<CandidateProfile>(key, initialProfile);
-  return { profile, setProfile, loaded };
-}
-
-/**
- * A pretend sign-in. There is no real authentication here - we simply
- * remember a name, an email and a role in localStorage so the navigation
- * can show the right links.
+ * Candidates never log in on this site - they browse and apply straight away.
+ * Recruiters sign in so the recruiter dashboard has an obvious entry point.
+ * There is no real authentication: we just remember a name, an email and a
+ * role in localStorage.
  */
 export function useSession() {
   const [session, setSession, loaded] = useLocalStorageState<Session | null>(
@@ -226,12 +156,7 @@ export function useSession() {
     null,
   );
 
-  /** Callers pass a name, email and role; the id is derived from the email. */
-  const signIn = useCallback(
-    (details: Omit<Session, "id">) =>
-      setSession({ ...details, id: userIdForEmail(details.email, details.role) }),
-    [setSession],
-  );
+  const signIn = useCallback((next: Session) => setSession(next), [setSession]);
   const signOut = useCallback(() => setSession(null), [setSession]);
 
   return { session, loaded, signIn, signOut };

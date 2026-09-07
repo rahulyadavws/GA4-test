@@ -6,7 +6,6 @@ const NAV_ITEMS: NavItem[] = [
   { href: "/recruiter/jobs", label: "Manage Jobs", icon: "💼" },
   { href: "/recruiter/jobs/new", label: "Post a Job", icon: "➕" },
   { href: "/recruiter/applications", label: "Applications", icon: "📄" },
-  { href: "/recruiter/candidates", label: "Candidates", icon: "👥" },
 ];
 
 /**
@@ -15,7 +14,7 @@ const NAV_ITEMS: NavItem[] = [
  */
 export default function RecruiterLayout({ children }: LayoutProps<"/recruiter">) {
   return (
-    <RequireRole role="recruiter">
+    <RequireRole>
       <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
         <div className="grid gap-8 lg:grid-cols-[220px_1fr]">
           <SidebarNav title="Recruiter" items={NAV_ITEMS} />
